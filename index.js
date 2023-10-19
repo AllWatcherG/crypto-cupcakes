@@ -41,6 +41,7 @@ app.use(auth(config));
 app.get('/', (req, res) => {
   if (req.oidc.isAuthenticated()) {
     res.send('Logged in');
+    console.log(req.oidc.user);
   } else {
     res.send('Logged out');
   }
