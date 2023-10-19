@@ -15,27 +15,37 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 /* *********** YOUR CODE HERE *********** */
-const {
-  AUTH0_SECRET = 'a long, randomly-generated string stored in env', // generate one by using: `openssl rand -base64 32`
-  AUTH0_AUDIENCE = 'http://localhost:3000',
-  AUTH0_CLIENT_ID,
-  AUTH0_BASE_URL,
-} = process.env;
-
-const config = {
-  authRequired: true, // this is different from the documentation
-  auth0Logout: true,
-  secret: AUTH0_SECRET,
-  baseURL: AUTH0_AUDIENCE,
-  clientID: AUTH0_CLIENT_ID,
-  issuerBaseURL: AUTH0_BASE_URL,
-};
 // follow the module instructions: destructure config environment variables from process.env
 // follow the docs:
   // define the config object
   // attach Auth0 OIDC auth router
   // create a GET / route handler that sends back Logged in or Logged out
+const {
+    AUTH0_SECRET = 'a long, randomly-generated string stored in env', // generate one by using: `openssl rand -base64 32`
+    AUTH0_AUDIENCE = 'http://localhost:3000',
+    AUTH0_CLIENT_ID,
+    AUTH0_BASE_URL,
+  } = process.env;  
+  
+const config = {
+    authRequired: true, // this is different from the documentation
+    auth0Logout: true,
+    secret: AUTH0_SECRET,
+    baseURL: AUTH0_AUDIENCE,
+    clientID: AUTH0_CLIENT_ID,
+    issuerBaseURL: AUTH0_BASE_URL,
+  };  
 
+app.use(auth(config));
+
+app.get('/', (req, res) => {
+  if (req.oidc.isAuthenticated()) {
+    res.send('Logged in');
+  } else {
+    res.send('Logged out');
+  }
+});
+  
 app.get('/cupcakes', async (req, res, next) => {
   try {
     const cupcakes = await Cupcake.findAll();
